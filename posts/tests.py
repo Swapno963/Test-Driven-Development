@@ -49,3 +49,21 @@ class PostModelTest(TestCase):
     def test_empty_body_allowed(self):
         post = Posts.objects.create(title="Test Title", body="")
         self.assertEqual(post.body, "")
+
+    def test_query_efficiency(self):
+        with self.assertNumQueries(1):
+            Posts.objects.create(title="Title 1", body="Body 1")
+    
+    def test_query_optimization(self):
+        for i in range(10):
+            Posts.objects.create(title=f"Title {i}", body="Body")
+        with self.assertNumQueries(1):
+            posts = list(Posts.objects.all())  # Fetch all posts in one query
+
+
+    def test_invalid_title_length(self):
+        with self.assertRaises(Exception): 
+            '''Django validates field constraints like max_length only when saving the model or during form validation. The issue here is likely that you are directly calling Posts.objects.create(), which skips certain field validations.''' 
+            post = Posts(title="A" * 51, body="Test Body")
+            post.full_clean()  # This raises a ValidationError if constraints are violated
+            post.save()
