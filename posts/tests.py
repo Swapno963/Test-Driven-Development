@@ -24,6 +24,28 @@ class PostModelTest(TestCase):
         self.assertIsNotNone(posts.modified)
 
         # Assert that created and modified timestamps are approximately equal to the current time
-
         self.assertTrue(now() - posts.created <= timedelta(seconds=1))
         self.assertTrue(now() - posts.modified <= timedelta(seconds=1))
+
+    def test_curd_operations(self):
+        # create
+        post = Posts.objects.create(title="test title", body="body")
+        self.assertEqual(Posts.objects.count(), 1)
+
+        # retrive
+        retrived_post = Posts.objects.get(id=post.id)
+        self.assertEqual(retrived_post.title, "test title")
+
+        # update
+        post.title = "updated title"
+        post.save()
+        updated_post = Posts.objects.get(id=post.id)
+        self.assertEqual(updated_post.title, "updated title")
+
+        # delete
+        post.delete()
+        self.assertEqual(Posts.objects.count(), 0)
+
+    def test_empty_body_allowed(self):
+        post = Posts.objects.create(title="Test Title", body="")
+        self.assertEqual(post.body, "")
