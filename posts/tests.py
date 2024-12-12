@@ -67,3 +67,5 @@ class PostModelTest(TestCase):
             post = Posts(title="A" * 51, body="Test Body")
             post.full_clean()  # This raises a ValidationError if constraints are violated
             post.save()
+
+
