@@ -1,9 +1,10 @@
 from django.test import TestCase
-from datetime import datetime, timedelta
+from datetime import timedelta
 from django.utils.timezone import now
 from http import HTTPStatus
-
+from model_bakery import baker
 # Create your tests here.
+from django.contrib.auth.models import User
 from .models import Posts
 
 
@@ -86,3 +87,36 @@ class HomePageTest(TestCase):
 
         self.assertContains(response, "my title")
         self.assertContains(response, "my title 2")
+
+
+class DetailPage(TestCase):
+    def setUp(self):
+        self.post1 = Posts.objects.create(title="my title", body="test body")
+
+    def test_detail_page_returns_correct_responce(self):
+        responce = self.client.get(self.post1.get_absolute_url())
+
+        self.assertTemplateUsed(responce, "posts/detail.html")
+        self.assertEqual(responce.status_code, HTTPStatus.OK)
+
+    def test_detail_page_returns_correct_content(self):
+        responce = self.client.get(self.post1.get_absolute_url())
+        self.assertContains(responce, self.post1.title)        
+        self.assertContains(responce, self.post1.body)       
+
+
+class PostAuthorTest(TestCase):
+    def setUp(self):
+        self.user = baker.make(User)
+        self.post = Posts.objects.create(
+            title="title",
+            body="body",
+            author= self.user
+        )
+
+    def test_author_is_instance_of_user_model(self):
+        self.assertTrue(isinstance(self.user, User))
+
+    def test_blogs_belongs_to_user(self):
+        self.assertTrue(hasattr(self.post, "author"))
+        self.assertEqual(self.post.author, self.user)
