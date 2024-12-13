@@ -1,7 +1,7 @@
 from django.test import TestCase
 from datetime import datetime, timedelta
 from django.utils.timezone import now
-
+from http import HTTPStatus
 # Create your tests here.
 from .models import Posts
 
@@ -69,3 +69,20 @@ class PostModelTest(TestCase):
             post.save()
 
 
+class HomePageTest(TestCase):
+    def setUp(self):
+        Posts.objects.create(
+            title="my title",
+            body="test body"
+        )  
+        Posts.objects.create(
+            title="my title 2",
+            body="test body 2"
+        )
+
+
+    def test_homepage_returns_correct_response(self):
+        responce = self.client.get("/")
+        
+        self.assertTemplateUsed(responce, 'posts/index.html')
+        self.assertEqual(responce.status_code, HTTPStatus.OK)
