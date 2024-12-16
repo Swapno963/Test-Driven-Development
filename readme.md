@@ -1,6 +1,6 @@
 # Django Testing Guide
 
-This guide outlines essential topics and best practices for testing in Django. It includes foundational concepts, advanced techniques, and tools to help you create robust and maintainable test suites.
+It includes foundational concepts, advanced techniques, and tools to help you create robust and maintainable test suites.
 
 ## 1. Foundational Concepts
 
